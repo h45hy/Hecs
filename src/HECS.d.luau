@@ -63,6 +63,7 @@ export type World = {
 	CreateEntity: (self: World) -> EntityId,
 	RemoveEntity: (self: World, entityId: EntityId) -> (),
 	SetComponent: <T>(self: World, entityId: EntityId, component: Component<T>) -> (),
+	RemoveComponent: <T>(self: World, entityId: EntityId, componentId: ComponentId) -> (),
 }
 
 return {}
