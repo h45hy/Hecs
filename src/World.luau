@@ -46,6 +46,7 @@ function World.new(): World
 			Next = {},
 		}
 	}
+	self.ComponentArchetypes = {}
 	self.EntityArchetypes = {}
 	self.EntityComponents = {}
 
@@ -226,7 +227,7 @@ function World.SetComponent<T>(
 	component: Component<T>
 )
 	assert(self.Entities[entityId], "Entity doesn't exist")
-	assert(typeof(component) ~= "table", "Invalid 'component' argument")
+	assert(typeof(component) == "table", "Invalid 'component' argument")
 
 	local worldArchetypes = self.Archetypes
 	local entityComponents = self.EntityComponents[entityId]
@@ -333,6 +334,7 @@ function World.__createArchetype(self: WorldPriv, componentIds: { ComponentId })
 	-- Add reference to other component combinations,
 	-- e.g ABC must be referenceable by AB, AC and BC,
 	-- so it's easier to find paths that way
+	--[[
 	for _, componentId in componentIds do
 		local withComponentMissing: { string } = {}
 		for _, otherComponentId in componentIds do
@@ -348,6 +350,28 @@ function World.__createArchetype(self: WorldPriv, componentIds: { ComponentId })
 			local otherArchetype = self.Archetypes[otherArchetypeId]
 			otherArchetype.Next[componentId] = archetypeId
 		end
+	end
+	]]
+
+	local componentCount = #componentIds
+	for _, componentId in componentIds do
+		local componentArchetypes = self.ComponentArchetypes[componentId]
+
+		if not componentArchetypes then
+			componentArchetypes = {}
+			self.ComponentArchetypes[componentId] = componentArchetypes
+		end
+
+		if componentCount > 1 then
+			-- Add archetype reference to all parent
+			-- archetypes 
+			for _, refArchetype in componentArchetypes do
+				print(refArchetype)
+			end
+		end
+
+		table.insert(componentArchetypes, archetypeId)
+		print(componentId, componentArchetypes)
 	end
 
 	self.Archetypes[archetypeId] = archetype

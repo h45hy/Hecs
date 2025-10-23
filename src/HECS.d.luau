@@ -48,6 +48,9 @@ export type World = {
 	Archetypes: {
 		[ArchetypeId]: Archetype,
 	},
+	ComponentArchetypes: {
+		[ComponentId]: { ArchetypeId },
+	},
 	EntityComponents: {
 		[EntityId]: ComponentSet,
 	},

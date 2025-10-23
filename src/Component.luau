@@ -22,8 +22,10 @@ Component.__index = Component
 	@prop data -- Data to attach to this component on initialization
 ]]
 function Component.new<T>(id: ComponentId, data: T?): Component<T>
-	assert(typeof(data) == "table", "Data must be a dictionary")
-	assert(data["id"] == nil, "'id' is a restricted field")
+	if data ~= nil then
+		assert(typeof(data) == "table", "Data must be a dictionary")
+		assert(data["id"] == nil, "'id' is a restricted field")
+	end
 
 	local self = {}
 	setmetatable(self, Component)
@@ -31,7 +33,7 @@ function Component.new<T>(id: ComponentId, data: T?): Component<T>
 	self.Id = id
 
 	if data then
-		for key, value in data do
+		for key, value in data :: any do
 			self[key] = value
 		end
 	end
