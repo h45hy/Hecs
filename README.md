@@ -1,8 +1,8 @@
 # Hecs
 
-"Hell's ECS"
+## "Hell's ECS"
 
-A simple ECS library made for Roblox
+An ECS library designed to have a minimal and vanilla-like syntax.
 
 ## Usage
 
