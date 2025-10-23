@@ -342,16 +342,28 @@ function World.__createArchetype(self: WorldPriv, componentIds: { ComponentId })
 
 		table.insert(componentArchetypes, archetypeId)
 
+		-- Populate all related archetypes with references
+		-- to this archetype and viceversa
 		for _, componentArchetypeId in componentArchetypes do
 			local componentArchetype = self.Archetypes[componentArchetypeId]
 			local componentArchetypeMix = componentArchetype.Components
 
+			-- Related archetypes can only be different
+			-- at most in one singular component
+			if math.abs(#componentArchetypeMix - #componentIds) ~= 1 then
+				continue
+			end
+
+			-- We loop through both table to get
+			-- the differing components between them,
+			-- skipping the ones that both tables have
 			local componentsDiff = {}
 			local count = #componentIds
 
 			for _, component in componentIds do
 				componentsDiff[component] = true
 			end
+
 			for _, component in componentArchetypeMix do
 				if componentsDiff[component] then
 					componentsDiff[component] = nil
@@ -363,13 +375,10 @@ function World.__createArchetype(self: WorldPriv, componentIds: { ComponentId })
 				componentsDiff[component] = true
 				count += 1
 			end
-			
-			if count == 1 then
-				local componentDiff = next(componentsDiff) :: string
-				
-				componentArchetype.Next[componentDiff] = archetypeId
-				archetype.Next[componentDiff] = componentArchetypeId
-			end
+
+			local componentDiff = next(componentsDiff) :: string
+			componentArchetype.Next[componentDiff] = archetypeId
+			archetype.Next[componentDiff] = componentArchetypeId
 		end
 	end
 
