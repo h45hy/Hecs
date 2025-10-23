@@ -330,30 +330,8 @@ function World.__createArchetype(self: WorldPriv, componentIds: { ComponentId })
 
 	local archetypeId = self.__lastArchetypeId + 1
 	self.__lastArchetypeId = archetypeId
+	self.Archetypes[archetypeId] = archetype
 
-	-- Add reference to other component combinations,
-	-- e.g ABC must be referenceable by AB, AC and BC,
-	-- so it's easier to find paths that way
-	--[[
-	for _, componentId in componentIds do
-		local withComponentMissing: { string } = {}
-		for _, otherComponentId in componentIds do
-			if otherComponentId == componentId then
-				continue
-			end
-
-			table.insert(withComponentMissing, otherComponentId)
-		end
-
-		local otherArchetypeId = self:__getArchetype(withComponentMissing)
-		if otherArchetypeId then
-			local otherArchetype = self.Archetypes[otherArchetypeId]
-			otherArchetype.Next[componentId] = archetypeId
-		end
-	end
-	]]
-
-	local componentCount = #componentIds
 	for _, componentId in componentIds do
 		local componentArchetypes = self.ComponentArchetypes[componentId]
 
@@ -362,19 +340,39 @@ function World.__createArchetype(self: WorldPriv, componentIds: { ComponentId })
 			self.ComponentArchetypes[componentId] = componentArchetypes
 		end
 
-		if componentCount > 1 then
-			-- Add archetype reference to all parent
-			-- archetypes 
-			for _, refArchetype in componentArchetypes do
-				print(refArchetype)
+		table.insert(componentArchetypes, archetypeId)
+
+		for _, componentArchetypeId in componentArchetypes do
+			local componentArchetype = self.Archetypes[componentArchetypeId]
+			local componentArchetypeMix = componentArchetype.Components
+
+			local componentsDiff = {}
+			local count = #componentIds
+
+			for _, component in componentIds do
+				componentsDiff[component] = true
+			end
+			for _, component in componentArchetypeMix do
+				if componentsDiff[component] then
+					componentsDiff[component] = nil
+					count -= 1
+
+					continue
+				end
+
+				componentsDiff[component] = true
+				count += 1
+			end
+			
+			if count == 1 then
+				local componentDiff = next(componentsDiff) :: string
+				
+				componentArchetype.Next[componentDiff] = archetypeId
+				archetype.Next[componentDiff] = componentArchetypeId
 			end
 		end
-
-		table.insert(componentArchetypes, archetypeId)
-		print(componentId, componentArchetypes)
 	end
 
-	self.Archetypes[archetypeId] = archetype
 	return archetypeId
 end
 
