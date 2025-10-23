@@ -283,6 +283,33 @@ function World.SetComponent<T>(
 end
 
 --[[
+	@within World
+	Removes a specified component from an entity
+
+	@prop entityId -- The entity's id
+	@prop componentId -- The component to remove
+]]
+function World.RemoveComponent(self: WorldPriv, entityId: EntityId, componentId: ComponentId)
+	local entityArchetypeId = self.EntityArchetypes[entityId]
+	local entityArchetype = self.Archetypes[entityArchetypeId]
+	local entityComponents = self.EntityComponents[entityId]
+
+	entityComponents[componentId] = nil
+
+	local nextArchetypeId = entityArchetype.Next[componentId]
+	if not nextArchetypeId then
+		local componentIds = {}
+		for _, component in entityComponents do
+			table.insert(componentIds, component.Id)
+		end
+
+		nextArchetypeId = self:__createArchetype(componentIds)
+	end
+
+	self:__setEntityArchetype(entityId, nextArchetypeId)
+end
+
+--[[
 	@private
 	@within World
 	Gets the archetype from a list of components
