@@ -1,9 +1,9 @@
 --!strict
 
-local HECSd = require("./Hecs.d")
+local Hecs_d = require("./Hecs.d")
 
-export type System = HECSd.System
-type World = HECSd.World
+export type System = Hecs_d.System
+type World = Hecs_d.World
 
 type UpdateCallback = (world: World, dt: number) -> ()
 type CleanupCallback = (world: World) -> ()

@@ -1,16 +1,16 @@
 --!strict
 
-local HECSd = require("./Hecs.d")
+local Hecs_d = require("./Hecs.d")
 
-export type World = HECSd.World
-type ComponentId = HECSd.ComponentId
-type Component<T> = HECSd.Component<T>
-type ArchetypeId = HECSd.ArchetypeId
-type Archetype = HECSd.Archetype
-type EntityId = HECSd.EntityId
-type System = HECSd.System
+export type World = Hecs_d.World
+type ComponentId = Hecs_d.ComponentId
+type Component<T> = Hecs_d.Component<T>
+type ArchetypeId = Hecs_d.ArchetypeId
+type Archetype = Hecs_d.Archetype
+type EntityId = Hecs_d.EntityId
+type System = Hecs_d.System
 
-type WorldPriv = HECSd.World & {
+type WorldPriv = Hecs_d.World & {
 	__freedIds: { EntityId },
 	__lastEntityId: EntityId,
 	__lastArchetypeId: ArchetypeId,
