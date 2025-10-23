@@ -46,6 +46,7 @@ function World.new(): World
 			Next = {},
 		}
 	}
+	self.ComponentArchetypes = {}
 	self.EntityArchetypes = {}
 	self.EntityComponents = {}
 
@@ -226,7 +227,7 @@ function World.SetComponent<T>(
 	component: Component<T>
 )
 	assert(self.Entities[entityId], "Entity doesn't exist")
-	assert(typeof(component) ~= "table", "Invalid 'component' argument")
+	assert(typeof(component) == "table", "Invalid 'component' argument")
 
 	local worldArchetypes = self.Archetypes
 	local entityComponents = self.EntityComponents[entityId]
@@ -329,28 +330,58 @@ function World.__createArchetype(self: WorldPriv, componentIds: { ComponentId })
 
 	local archetypeId = self.__lastArchetypeId + 1
 	self.__lastArchetypeId = archetypeId
+	self.Archetypes[archetypeId] = archetype
 
-	-- Add reference to other component combinations,
-	-- e.g ABC must be referenceable by AB, AC and BC,
-	-- so it's easier to find paths that way
 	for _, componentId in componentIds do
-		local withComponentMissing: { string } = {}
-		for _, otherComponentId in componentIds do
-			if otherComponentId == componentId then
+		local componentArchetypes = self.ComponentArchetypes[componentId]
+
+		if not componentArchetypes then
+			componentArchetypes = {}
+			self.ComponentArchetypes[componentId] = componentArchetypes
+		end
+
+		table.insert(componentArchetypes, archetypeId)
+
+		-- Populate all related archetypes with references
+		-- to this archetype and viceversa
+		for _, componentArchetypeId in componentArchetypes do
+			local componentArchetype = self.Archetypes[componentArchetypeId]
+			local componentArchetypeMix = componentArchetype.Components
+
+			-- Related archetypes can only be different
+			-- at most in one singular component
+			if math.abs(#componentArchetypeMix - #componentIds) ~= 1 then
 				continue
 			end
 
-			table.insert(withComponentMissing, otherComponentId)
-		end
+			-- We loop through both table to get
+			-- the differing components between them,
+			-- skipping the ones that both tables have
+			local componentsDiff = {}
+			local count = #componentIds
 
-		local otherArchetypeId = self:__getArchetype(withComponentMissing)
-		if otherArchetypeId then
-			local otherArchetype = self.Archetypes[otherArchetypeId]
-			otherArchetype.Next[componentId] = archetypeId
+			for _, component in componentIds do
+				componentsDiff[component] = true
+			end
+
+			for _, component in componentArchetypeMix do
+				if componentsDiff[component] then
+					componentsDiff[component] = nil
+					count -= 1
+
+					continue
+				end
+
+				componentsDiff[component] = true
+				count += 1
+			end
+
+			local componentDiff = next(componentsDiff) :: string
+			componentArchetype.Next[componentDiff] = archetypeId
+			archetype.Next[componentDiff] = componentArchetypeId
 		end
 	end
 
-	self.Archetypes[archetypeId] = archetype
 	return archetypeId
 end
 
