@@ -1,9 +1,9 @@
 --!strict
 
-local HECSd = require("./HECS.d")
+local HECSd = require("./Hecs.d")
 
+export type Component<T> = HECSd.Component<T>
 type ComponentId = HECSd.ComponentId
-type Component<T> = HECSd.Component<T>
 
 --[[
 	@class Component

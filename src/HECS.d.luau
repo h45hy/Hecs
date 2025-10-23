@@ -1,6 +1,6 @@
 --[[
-	@fileinfo HECS.d.luau
-	Holds all of the types used in HECS to
+	@fileinfo Hecs.d.luau
+	Holds all of the types used in Hecs to
 	avoid circular dependencies
 ]]
 

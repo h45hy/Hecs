@@ -1,4 +1,4 @@
-# HECS Changelog
+# Hecs Changelog
 
 ## Unreleased Changes
 

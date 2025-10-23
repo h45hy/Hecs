@@ -1,12 +1,12 @@
 --!strict
 
-local HECSd = require("./HECS.d")
+local HECSd = require("./Hecs.d")
 
+export type World = HECSd.World
 type ComponentId = HECSd.ComponentId
 type Component<T> = HECSd.Component<T>
 type ArchetypeId = HECSd.ArchetypeId
 type Archetype = HECSd.Archetype
-type World = HECSd.World
 type EntityId = HECSd.EntityId
 type System = HECSd.System
 
