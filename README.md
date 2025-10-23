@@ -10,7 +10,7 @@ A simple ECS library made for Roblox
 local Hecs = require(path.to.Hecs)
 local World, Component, System = Hecs.World, Hecs.Component, Hecs.System
 
-local world = World.new()
+local myWorld = World.new()
 
 local function createAgeSystem()
 	local system = System.new()
@@ -30,12 +30,12 @@ local function createAgeComponent()
 	})
 end
 
-local entity = World:CreateEntity()
-World:SetComponent(entity, createAgeComponent())
-World:RegisterSystem(createAgeSystem())
+local entity = myWorld:CreateEntity()
+myWorld:SetComponent(entity, createAgeComponent())
+myWorld:RegisterSystem(createAgeSystem())
 
 while true do
 	local dt = task.wait()
-	World:Tick(dt)
+	myWorld:Tick(dt)
 end
 ```
