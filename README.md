@@ -25,7 +25,7 @@ local function createAgeSystem()
 end
 
 local function createAgeComponent()
-	return component.new("Age", {
+	return Component.new("Age", {
 		ageMs = 0
 	})
 end
